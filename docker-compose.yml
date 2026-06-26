@@ -1,0 +1,15 @@
+version: '3'
+services:
+  chhoto-url:
+    image: sintan1729/chhoto-url:latest
+    restart: unless-stopped
+    container_name: chhoto-url
+    ports:
+      - '25504:4567'
+    environment:
+      - site_url=https://go.fatep.eu.org
+      - password=110
+      - CHHOTO_API_KEY=fate110_api_key
+      - CHHOTO_DB_URL=/db/urls.sqlite
+    volumes:
+      - ./data:/db
