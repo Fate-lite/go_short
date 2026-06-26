@@ -1,7 +1,7 @@
 version: '3'
 services:
   chhoto-url:
-    image: sintan1729/chhoto-url:latest
+    build: .
     restart: unless-stopped
     container_name: chhoto-url
     ports:
@@ -13,3 +13,4 @@ services:
       - CHHOTO_DB_URL=/db/urls.sqlite
     volumes:
       - ./data:/db
+
