@@ -130,14 +130,11 @@ async fn main() -> Result<()> {
             .service(services::whoami);
 
         if !conf.disable_frontend {
-            if let Some(dir) = &conf.custom_landing_directory {
-                app = app
-                    .service(Redirect::new("/admin/manage", "/admin/manage/"))
-                    .service(Files::new("/admin/manage/", "./frontend/").index_file("index.html"))
-                    .service(Files::new("/", dir).index_file("index.html"));
-            } else {
-                app = app.service(Files::new("/", "./frontend/").index_file("index.html"));
-            }
+            let landing_dir = conf.custom_landing_directory.as_deref().unwrap_or("./custom_landing/");
+            app = app
+                .service(Redirect::new("/admin/manage", "/admin/manage/"))
+                .service(Files::new("/admin/manage/", "./frontend/").index_file("index.html"))
+                .service(Files::new("/", landing_dir).index_file("index.html"));
         }
 
         app.default_service(actix_web::web::get().to(utils::error404))
