@@ -1,7 +1,7 @@
 <!-- SPDX-FileCopyrightText: 2023-2026 Sayantan Santra <sayantan.santra689@gmail.com> -->
 <!-- SPDX-License-Identifier: MIT -->
 
-# ![Logo](frontend/assets/favicon-32.png) Go Short
+# <img src="frontend/assets/favicon.svg" width="38" height="38" align="center" /> Go Short
 
 **Go Short** 是一个极简、极速、无广告、且拥有现代感交互设计的自托管 URL 短链接缩短服务。它基于 Rust 开发，后端使用 Actix Web，前端使用原生的 HTML5 / CSS3 / Vanilla JS 编写，在提供出色的高并发、低延迟性能的同时，完全去除了不必要的追踪与臃肿功能。
 
