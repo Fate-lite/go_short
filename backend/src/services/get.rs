@@ -107,7 +107,7 @@ pub(crate) async fn getconfig(auth: Auth, data: web::Data<AppState>) -> HttpResp
 }
 
 // Handle a given shortlink
-#[get("/{shortlink}")]
+#[get("/{shortlink:[a-zA-Z0-9_-]+}")]
 pub(crate) async fn link_handler(
     shortlink: web::Path<String>,
     data: web::Data<AppState>,
