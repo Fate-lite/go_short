@@ -199,7 +199,9 @@ pub(crate) fn edit_link(
     shortlink: &str,
     longlink: &str,
     reset_hits: bool,
+    update_expiry: bool,
     expiry_time: Option<i64>,
+    update_notes: bool,
     notes: Option<&str>,
     db: &Connection,
 ) -> Result<usize, ()> {
@@ -213,8 +215,10 @@ pub(crate) fn edit_link(
             ":long": longlink,
             ":short": shortlink,
             ":now": now,
-            ":hits": reset_hits.then_some(0),
+            ":update_hits": reset_hits,
+            ":update_notes": update_notes,
             ":notes": notes,
+            ":update_expiry": update_expiry,
             ":expiry": expiry_time,
         })
         .inspect_err(|err| {

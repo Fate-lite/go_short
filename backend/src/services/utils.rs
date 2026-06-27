@@ -38,6 +38,10 @@ struct EditURLRequest {
     reset_hits: bool,
     expiry_time: Option<i64>,
     notes: Option<String>,
+    #[serde(default)]
+    clear_expiry: bool,
+    #[serde(default)]
+    clear_notes: bool,
 }
 
 // Only allow safe URI schemes
@@ -243,12 +247,19 @@ pub(super) fn edit_link_helper(
             reason: "Unsupported URL scheme.".to_string(),
         });
     }
+    let update_expiry = chunks.clear_expiry || chunks.expiry_time.is_some();
+    let expiry_time = if chunks.clear_expiry { None } else { chunks.expiry_time.filter(|&t| t > 0) };
+    let update_notes = chunks.clear_notes || chunks.notes.is_some();
+    let notes_ref = if chunks.clear_notes { None } else { chunks.notes.as_deref().filter(|s| !s.is_empty()) };
+
     let result = database::edit_link(
         &chunks.shortlink,
         &chunks.longlink,
         chunks.reset_hits,
-        chunks.expiry_time.filter(|&t| t > 0),
-        chunks.notes.filter(|s| !s.is_empty()).as_deref(),
+        update_expiry,
+        expiry_time,
+        update_notes,
+        notes_ref,
         db,
     );
     match result {

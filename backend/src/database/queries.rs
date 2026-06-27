@@ -89,9 +89,9 @@ pub(super) const EDIT_LINK: &str = "
 UPDATE urls
   SET
     long_url = :long,
-    hits = COALESCE(:hits, hits),
-    notes = COALESCE(:notes, notes),
-    expiry_time = COALESCE(:expiry, expiry_time)
+    hits = CASE WHEN :update_hits THEN 0 ELSE hits END,
+    notes = CASE WHEN :update_notes THEN :notes ELSE notes END,
+    expiry_time = CASE WHEN :update_expiry THEN :expiry ELSE expiry_time END
   WHERE short_url = :short
     AND (expiry_time IS NULL OR expiry_time > :now)
 ";
