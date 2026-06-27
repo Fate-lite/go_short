@@ -427,6 +427,26 @@ const TR = (i, row) => {
   return tr;
 };
 
+const copyTextFallback = (text) => {
+  try {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    if (successful) return Promise.resolve();
+  } catch (err) {
+    return Promise.reject(err);
+  }
+  return Promise.reject(new Error("Fallback copy command failed"));
+};
+
 const copyShortUrl = (shortLink, doCopy) => {
   const fullLink = `${SITE_URL}/${shortLink}`;
   const linkElt = `<a href=${fullLink} target="_blank">${fullLink}</a>`;
@@ -439,10 +459,10 @@ const copyShortUrl = (shortLink, doCopy) => {
     copyPromise = doCopy // We want to use it only for the UI in some cases
       ? navigator.clipboard.writeText(fullLink)
       : Promise.resolve();
+  } else if (doCopy) {
+    copyPromise = copyTextFallback(fullLink);
   } else {
-    copyPromise = Promise.reject(
-      new Error("Unable to get access to clipboard."),
-    );
+    copyPromise = Promise.resolve();
   }
 
   copyPromise

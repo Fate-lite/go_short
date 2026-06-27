@@ -246,19 +246,24 @@
                 // Generate QR Code
                 const qrContainer = document.getElementById('qrcode');
                 qrContainer.innerHTML = '';
-                qrCodeInstance = new QRCode(qrContainer, {
-                    text: generatedUrl,
-                    width: 140,
-                    height: 140,
-                    colorDark: "#000000",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
+                if (typeof QRCode !== 'undefined') {
+                    qrCodeInstance = new QRCode(qrContainer, {
+                        text: generatedUrl,
+                        width: 140,
+                        height: 140,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                } else {
+                    console.warn('QRCode library is not loaded. Skipping QR code generation.');
+                    qrContainer.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; padding: 1rem; border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px;">QR Code Unavailable</div>';
+                }
 
                 showToast('Short URL generated successfully!');
                 resultSection.scrollIntoView({ behavior: 'smooth' });
             } catch (err) {
-                showToast('Network error, please try again.', 'error');
+                showToast(err.message || 'Network error, please try again.', 'error');
                 console.error(err);
             } finally {
                 submitBtn.disabled = false;
@@ -266,16 +271,46 @@
             }
         });
 
+        // Copy text to clipboard helper (with non-secure HTTP fallback)
+        function copyTextToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise((resolve, reject) => {
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = text;
+                    textArea.style.top = "0";
+                    textArea.style.left = "0";
+                    textArea.style.position = "fixed";
+                    textArea.style.opacity = "0";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    if (successful) {
+                        resolve();
+                    } else {
+                        reject(new Error("Copy command failed"));
+                    }
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+
         // Copy button handler
         copyBtn.addEventListener('click', () => {
             const url = resultUrl.textContent;
-            navigator.clipboard.writeText(url).then(() => {
+            copyTextToClipboard(url).then(() => {
                 showToast('Link copied to clipboard!');
                 copyBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00F5A0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                 setTimeout(() => {
                     copyBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
                 }, 2000);
-            }).catch(() => {
+            }).catch((err) => {
+                console.error('Copy failed:', err);
                 showToast('Failed to copy link.', 'error');
             });
         });
