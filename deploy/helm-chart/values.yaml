@@ -1,0 +1,36 @@
+# Default values for chhoto-url.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: sintan1729/chhoto-url
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+# hash_algorithm: Argon2
+# please use a better password in your values and base64 encode it
+password: cGFzc3dvcmQ=
+# if used, needs to be base64 encoded as well
+# api_key: U0VDVVJFX0FQSV9LRVk=
+
+persistence:
+  hostPath:
+    path: /mnt/data/chhoto-data
+
+redirect_method: PERMANENT
+slug_style: Pair
+slug_length: 8
+try_longer_slug: False
+public_mode: Disable
+public_mode_expiry_delay: 0
+disable_frontend: False
+allow_capital_letters: False
+# custom_landing_directory: "/custom/dir/location"
+# cache_control_header: "no-cache, private"
+use_wal_mode: True
+# ensure_acid: False
+frontend_page_size: 10
+
+protocol: https
+fqdn: your.short.link.url.com
+letsencryptmail: your.mail@address.com

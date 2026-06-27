@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chhoto-url
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chhoto-url
+  template:
+    metadata:
+      labels:
+        app: chhoto-url
+    spec:
+      containers:
+        - name: chhoto-url
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 4567
+          env:
+            - name: CHHOTO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: password
+            {{- if .Values.api_key }}
+            - name: CHHOTO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: api_key
+            {{- end }}
+            {{- if .Values.hash_algorithm }}
+            - name: CHHOTO_HASH_ALGORITHM 
+              value: {{ .Values.hash_algorithm  }}
+            {{- end }}
+            - name: CHHOTO_DB_URL
+              value: /db/urls.sqlite
+            - name: CHHOTO_SITE_URL
+              value: "{{ .Values.protocol }}://{{ .Values.fqdn }}"
+            - name: CHHOTO_REDIRECT_METHOD
+              value: {{ .Values.redirect_method }}
+            - name: CHHOTO_SLUG_STYLE
+              value: {{ .Values.slug_style }}
+            - name: CHHOTO_SLUG_LENGTH
+              value: "{{ .Values.slug_length }}"
+            - name: CHHOTO_TRY_LONGER_SLUG
+              value: "{{ .Values.try_longer_slug }}"
+            - name: CHHOTO_PUBLIC_MODE
+              value: {{ .Values.public_mode }}
+            - name: CHHOTO_PUBLIC_MODE_EXPIRY_DELAY
+              value: {{ .Values.public_mode_expiry_delay }}
+            - name: CHHOTO_DISABLE_FRONTEND
+              value: {{ .Values.disable_frontend }}
+            - name: CHHOTO_ALLOW_CAPITAL_LETTERS 
+              value: {{ .Values.allow_capital_letters }}
+            - name: CHHOTO_FRONTEND_PAGE_SIZE
+              value: {{ .Values.frontend_page_size }}
+            {{- if .Values.custom_landing_directory }}
+            - name: CHHOTO_CUSTOM_LANDING_DIRECTORY
+              value: {{ .Values.custom_landing_directory }}
+            {{- end }}
+            {{- if .Values.cache_control_header }}
+            - name: CHHOTO_CACHE_CONTROL_HEADER
+              value: {{ .Values.cache_control_header }}
+            {{- end }}
+            - name: CHHOTO_SQLITE_USE_WAL_MODE
+              value: {{ .Values.use_wal_mode }}
+            {{- if .Values.ensure_acid }}
+            - name: CHHOTO_SQLITE_ENSURE_ACID
+              value: {{ .Values.ensure_acid }}
+            {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /db
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Mi
