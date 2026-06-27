@@ -13,16 +13,40 @@
 
     <header>
         <a href="/" class="logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+            <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00F5A0" />
+                        <stop offset="100%" stop-color="#00D9F6" />
+                    </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="40" stroke="url(#logo-grad)" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <path d="M 45 35 L 60 50 L 45 65" stroke="url(#logo-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                <path d="M 60 35 L 75 50 L 60 65" stroke="url(#logo-grad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+            </svg>
             <span>Go Short</span>
         </a>
-        <nav>
-            <a href="/" class="nav-link">Home</a>
+        <nav class="nav-menu" id="headerNav" style="display: none;">
             <a href="/admin/manage/" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">My Links</a>
+            <a href="#" class="nav-link">Analytics</a>
+            <a href="#" class="nav-link">Settings</a>
         </nav>
+        <div class="header-right" id="headerRight" style="display: none;">
+            <button class="btn-icon header-bell" title="Notifications">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            </button>
+            <button class="btn btn-new-link" id="dashboardNewLinkBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>New Link</span>
+            </button>
+            <div class="avatar">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Avatar">
+            </div>
+        </div>
     </header>
 
-    <main style="max-width: 1000px; width: 100%;">
+    <main style="max-width: 1400px; width: 100%;">
         <!-- Login Panel -->
         <div class="card login-card" id="loginPanel">
             <h2 class="login-title">Admin Dashboard</h2>
@@ -40,40 +64,135 @@
 
         <!-- Dashboard Panel -->
         <div id="dashboardPanel" style="display: none; width: 100%;">
-            <div class="dashboard-header">
-                <h2>Link Management</h2>
+            <div class="dashboard-title-bar">
+                <div class="title-left">
+                    <h2>My Shortened URLs</h2>
+                    <p>Manage, track and optimize your connections.</p>
+                </div>
                 <button class="btn" style="width: auto; padding: 0.5rem 1rem;" id="logoutBtn">
                     <span>Lock Dashboard</span>
                 </button>
             </div>
 
-            <div class="search-bar-container">
-                <div class="search-input-wrapper">
-                    <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" id="searchInput" placeholder="Search links by short link, target URL, or notes (at least 3 characters)..." autocomplete="off">
-                </div>
-            </div>
+            <div class="dashboard-grid">
+                <!-- Left Column: Links list -->
+                <div class="dashboard-main">
+                    <div class="toolbar">
+                        <div class="search-input-wrapper">
+                            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="searchInput" placeholder="Search links by short link, target URL, or notes..." autocomplete="off">
+                        </div>
+                        <div class="filter-select-wrapper">
+                            <select id="filterSort" class="select-filter">
+                                <option value="default">Sort by: Default</option>
+                                <option value="clicks-desc">Sort by: Clicks (High to Low)</option>
+                                <option value="clicks-asc">Sort by: Clicks (Low to High)</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div class="table-wrapper">
-                <table id="linksTable">
-                    <thead>
-                        <tr>
-                            <th>Short Link</th>
-                            <th>Target URL</th>
-                            <th>Clicks</th>
-                            <th>Expiration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="linksTableBody">
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">Loading your shortened links...</td>
-                        </tr>
-                    </tbody>
-                </table>
+                    <div class="table-wrapper">
+                        <table id="linksTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox"></th>
+                                    <th>Original URL</th>
+                                    <th>Shortened Link</th>
+                                    <th>Expiration</th>
+                                    <th>Status</th>
+                                    <th>Total Hits</th>
+                                    <th>Hits Sparkline</th>
+                                    <th style="text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="linksTableBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 3rem;">Loading your shortened links...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Column: Sidebar statistics -->
+                <div class="dashboard-sidebar">
+                    <div class="sidebar-card">
+                        <div class="card-metric">
+                            <span class="metric-label">Active Links</span>
+                            <span class="metric-value" id="statActiveLinks">0</span>
+                        </div>
+                        <div class="card-metric">
+                            <span class="metric-label">Total Clicks</span>
+                            <span class="metric-value" id="statTotalClicks">0</span>
+                        </div>
+                        <div class="card-metric">
+                            <span class="metric-label">Top Link</span>
+                            <span class="metric-link" id="statTopLink">None</span>
+                        </div>
+                        <div class="sidebar-chart-wrapper">
+                            <svg viewBox="0 0 200 60" class="sidebar-sparkline" id="sidebarSparkline">
+                                <defs>
+                                    <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="#00F5A0" stop-opacity="0.3"></stop>
+                                        <stop offset="100%" stop-color="#00F5A0" stop-opacity="0"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <path d="" fill="url(#spark-grad)" id="sidebarSparklineArea"></path>
+                                <path d="" fill="none" stroke="#00F5A0" stroke-width="2" id="sidebarSparklinePath"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card chart-card">
+                        <h4 class="card-title">Clicks Share (Top Links)</h4>
+                        <div class="donut-chart-container">
+                            <svg viewBox="0 0 100 100" class="donut-chart">
+                                <circle cx="50" cy="50" r="35" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="8"></circle>
+                                <circle id="donutSegment1" cx="50" cy="50" r="35" fill="transparent" stroke="#00F2FE" stroke-width="8" stroke-dasharray="0 220" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                                <circle id="donutSegment2" cx="50" cy="50" r="35" fill="transparent" stroke="#4FACFE" stroke-width="8" stroke-dasharray="0 220" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                                <circle id="donutSegment3" cx="50" cy="50" r="35" fill="transparent" stroke="#00F5A0" stroke-width="8" stroke-dasharray="0 220" stroke-dashoffset="0" transform="rotate(-90 50 50)"></circle>
+                            </svg>
+                            <div class="donut-center" id="donutTotalClicks">0</div>
+                        </div>
+                        <div class="donut-legend" id="donutLegend"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
+
+    <!-- Create New Link Modal -->
+    <div id="newLinkModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Link</h3>
+                <button class="modal-close-btn" id="closeNewLinkModalBtn" title="Close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form id="newLinkForm">
+                <div class="form-group">
+                    <label class="form-label" for="newLonglink">Destination URL</label>
+                    <input type="url" id="newLonglink" placeholder="https://example.com/very/long/url" required autocomplete="off">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="newCustomSlug">Custom Suffix (Optional)</label>
+                    <input type="text" id="newCustomSlug" placeholder="e.g., promo-link" pattern="^[a-zA-Z0-9\-_]+$">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="newExpiryDate">Expiration Date (Optional)</label>
+                    <input type="date" id="newExpiryDate">
+                </div>
+                
+                <button type="submit" class="btn" id="newLinkSubmitBtn">
+                    <span>Create Link</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Edit Link Modal -->
     <div id="editModal" class="modal-overlay" style="display: none;">
@@ -89,7 +208,7 @@
                 
                 <div class="form-group">
                     <label class="form-label" for="editLonglink">Target URL</label>
-                    <input type="url" id="editLonglink" required>
+                    <input type="url" id="editLonglink" required autocomplete="off">
                 </div>
                 
                 <div class="form-group">
@@ -152,6 +271,8 @@
                     sessionStorage.removeItem('admin_unlocked');
                     loginPanel.style.display = 'block';
                     dashboardPanel.style.display = 'none';
+                    document.getElementById('headerNav').style.display = 'none';
+                    document.getElementById('headerRight').style.display = 'none';
                 }
             } catch (err) {
                 console.error(err);
@@ -228,6 +349,8 @@
             sessionStorage.removeItem('admin_unlocked');
             loginPanel.style.display = 'block';
             dashboardPanel.style.display = 'none';
+            document.getElementById('headerNav').style.display = 'none';
+            document.getElementById('headerRight').style.display = 'none';
             document.getElementById('adminPassword').value = '';
             showToast('Dashboard locked.');
         });
@@ -236,6 +359,8 @@
         function showDashboard() {
             loginPanel.style.display = 'none';
             dashboardPanel.style.display = 'block';
+            document.getElementById('headerNav').style.display = 'flex';
+            document.getElementById('headerRight').style.display = 'flex';
             fetchLinks();
         }
 
@@ -252,6 +377,8 @@
                     sessionStorage.removeItem('admin_unlocked');
                     loginPanel.style.display = 'block';
                     dashboardPanel.style.display = 'none';
+                    document.getElementById('headerNav').style.display = 'none';
+                    document.getElementById('headerRight').style.display = 'none';
                     showToast('Session expired. Please log in again.', 'error');
                     return;
                 }
@@ -259,21 +386,106 @@
                 const links = await response.json();
                 allLinks = links;
                 renderLinks(links);
+                calculateStats(links);
             } catch (err) {
                 console.error(err);
-                linksTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--error); padding: 3rem;">Failed to connect to API server.</td></tr>`;
+                linksTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--error); padding: 3rem;">Failed to connect to API server.</td></tr>`;
+            }
+        }
+
+        // Calculate and Render real-time stats
+        function calculateStats(links) {
+            const activeCount = links.filter(l => l.expiry_time === 0 || l.expiry_time * 1000 > Date.now()).length;
+            const totalClicks = links.reduce((sum, l) => sum + l.hits, 0);
+            
+            document.getElementById('statActiveLinks').textContent = activeCount;
+            document.getElementById('statTotalClicks').textContent = totalClicks;
+            document.getElementById('donutTotalClicks').textContent = totalClicks >= 1000000 ? (totalClicks / 1000000).toFixed(1) + 'M' : totalClicks >= 1000 ? (totalClicks / 1000).toFixed(1) + 'K' : totalClicks;
+
+            // Top Link
+            const topLink = links.reduce((max, l) => l.hits > max.hits ? l : max, { hits: -1, shortlink: 'None' });
+            const topLinkEl = document.getElementById('statTopLink');
+            if (topLink.shortlink !== 'None') {
+                topLinkEl.textContent = `${window.location.host}/${topLink.shortlink}`;
+                topLinkEl.href = `/${topLink.shortlink}`;
+            } else {
+                topLinkEl.textContent = 'None';
+                topLinkEl.removeAttribute('href');
+            }
+
+            // Click distribution sparkline (top 10 links click curve)
+            const sortedByHits = [...links].sort((a,b) => b.hits - a.hits).slice(0, 10).reverse();
+            if (sortedByHits.length > 1) {
+                const maxHits = Math.max(...sortedByHits.map(l => l.hits), 1);
+                const points = sortedByHits.map((l, i) => {
+                    const x = (i / (sortedByHits.length - 1)) * 200;
+                    const y = 60 - (l.hits / maxHits) * 50 - 5;
+                    return {x, y};
+                });
+                const pathD = `M ${points.map(p => `${p.x} ${p.y}`).join(' L ')}`;
+                document.getElementById('sidebarSparklinePath').setAttribute('d', pathD);
+                const areaD = `${pathD} L 200 60 L 0 60 Z`;
+                document.getElementById('sidebarSparklineArea').setAttribute('d', areaD);
+            } else {
+                document.getElementById('sidebarSparklinePath').setAttribute('d', '');
+                document.getElementById('sidebarSparklineArea').setAttribute('d', '');
+            }
+
+            // Donut Chart share (top 3 links clicks share)
+            const top3 = [...links].sort((a,b) => b.hits - a.hits).slice(0, 3).filter(l => l.hits > 0);
+            const segment1 = document.getElementById('donutSegment1');
+            const segment2 = document.getElementById('donutSegment2');
+            const segment3 = document.getElementById('donutSegment3');
+            const legend = document.getElementById('donutLegend');
+            
+            segment1.setAttribute('stroke-dasharray', '0 220');
+            segment2.setAttribute('stroke-dasharray', '0 220');
+            segment3.setAttribute('stroke-dasharray', '0 220');
+            legend.innerHTML = '';
+            
+            if (top3.length > 0 && totalClicks > 0) {
+                let currentOffset = 0;
+                const colors = ['#00F2FE', '#4FACFE', '#00F5A0'];
+                
+                top3.forEach((link, idx) => {
+                    const percentage = link.hits / totalClicks;
+                    const length = percentage * 220;
+                    const seg = [segment1, segment2, segment3][idx];
+                    seg.setAttribute('stroke-dasharray', `${length} ${220 - length}`);
+                    seg.setAttribute('stroke-dashoffset', -currentOffset);
+                    currentOffset += length;
+                    
+                    legend.innerHTML += `
+                        <div class="legend-item">
+                            <span class="legend-dot" style="background-color: ${colors[idx]}"></span>
+                            <span class="legend-label">${link.shortlink}</span>
+                            <span class="legend-value">${(percentage * 100).toFixed(0)}%</span>
+                        </div>
+                    `;
+                });
+            } else {
+                legend.innerHTML = `<div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; padding-top: 1rem;">No clicks tracked yet</div>`;
             }
         }
 
         // Render Links into Table
         function renderLinks(links) {
             if (!links || links.length === 0) {
-                linksTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No shortened links found.</td></tr>`;
+                linksTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 3rem;">No shortened links found.</td></tr>`;
                 return;
             }
 
+            // Apply filter sorting
+            let sortedLinks = [...links];
+            const sortVal = document.getElementById('filterSort').value;
+            if (sortVal === 'clicks-desc') {
+                sortedLinks.sort((a, b) => b.hits - a.hits);
+            } else if (sortVal === 'clicks-asc') {
+                sortedLinks.sort((a, b) => a.hits - b.hits);
+            }
+
             linksTableBody.innerHTML = '';
-            links.forEach(link => {
+            sortedLinks.forEach(link => {
                 const row = document.createElement('tr');
                 
                 // Expiry Badge
@@ -284,6 +496,30 @@
                     expiryBadge = `<span class="badge ${isExpired ? 'badge-expiry' : 'badge-hits'}" title="${date.toLocaleString()}">${date.toLocaleDateString()}</span>`;
                 }
 
+                // Status Badge
+                let statusHtml = `<span class="status-badge"><span class="status-dot dot-active"></span>Active</span>`;
+                if (link.expiry_time > 0 && link.expiry_time * 1000 < Date.now()) {
+                    statusHtml = `<span class="status-badge"><span class="status-dot dot-expired"></span>Expired</span>`;
+                }
+
+                // Clicks Sparkline svg
+                let sparkPath = '';
+                if (link.hits > 0) {
+                    const h = link.hits;
+                    const p1 = Math.min(12, h * 0.1);
+                    const p2 = Math.min(28, h * 0.3);
+                    const p3 = Math.min(18, h * 0.2);
+                    const p4 = Math.min(32, h * 0.5);
+                    sparkPath = `<path d="M 5 20 Q 25 ${35 - p1}, 45 ${35 - p2} T 85 ${35 - p3} T 115 ${35 - p4}" fill="none" stroke="#00F5A0" stroke-width="1.8" stroke-linecap="round"></path>`;
+                } else {
+                    sparkPath = `<path d="M 5 20 L 115 20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"></path>`;
+                }
+                const sparklineSvg = `
+                    <svg viewBox="0 0 120 40" class="table-sparkline">
+                        ${sparkPath}
+                    </svg>
+                `;
+
                 // Notes Sub-text
                 let notesHtml = '';
                 if (link.notes && link.notes.trim() !== '') {
@@ -292,24 +528,33 @@
 
                 row.innerHTML = `
                     <td>
-                        <a href="/${link.shortlink}" target="_blank" class="table-link">${link.shortlink}</a>
+                        <input type="checkbox" class="link-row-checkbox" value="${link.shortlink}">
                     </td>
                     <td>
                         <div class="table-long-link" title="${link.longlink}">${link.longlink}</div>
                         ${notesHtml}
                     </td>
                     <td>
-                        <span class="badge badge-hits">${link.hits} Clicks</span>
+                        <a href="/${link.shortlink}" target="_blank" class="table-link">${link.shortlink}</a>
                     </td>
                     <td>
                         ${expiryBadge}
                     </td>
                     <td>
+                        ${statusHtml}
+                    </td>
+                    <td>
+                        <span class="badge badge-hits">${link.hits} Clicks</span>
+                    </td>
+                    <td>
+                        ${sparklineSvg}
+                    </td>
+                    <td>
                         <div style="display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
-                            <button class="btn-edit" onclick="openEditModal('${link.shortlink}')" title="Edit Link">
+                            <button class="btn-icon" onclick="openEditModal('${link.shortlink}')" title="Edit Link">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4Z"></path></svg>
                             </button>
-                            <button class="btn-delete" onclick="deleteLink('${link.shortlink}')" title="Delete Link">
+                            <button class="btn-icon btn-delete" onclick="deleteLink('${link.shortlink}')" title="Delete Link">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                             </button>
                         </div>
@@ -337,6 +582,8 @@
                     sessionStorage.removeItem('admin_unlocked');
                     loginPanel.style.display = 'block';
                     dashboardPanel.style.display = 'none';
+                    document.getElementById('headerNav').style.display = 'none';
+                    document.getElementById('headerRight').style.display = 'none';
                     showToast('Session expired. Please log in again.', 'error');
                 } else {
                     showToast('Failed to delete the link.', 'error');
@@ -361,6 +608,77 @@
                     fetchLinks();
                 }
             }, 300);
+        });
+
+        // Filter Sort Event
+        document.getElementById('filterSort').addEventListener('change', () => {
+            renderLinks(allLinks);
+        });
+
+        // Select All Checkbox helper
+        document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+            const checkboxes = document.querySelectorAll('.link-row-checkbox');
+            checkboxes.forEach(cb => cb.checked = e.target.checked);
+        });
+
+        // New Link Modal Handlers
+        const newLinkModal = document.getElementById('newLinkModal');
+        const dashboardNewLinkBtn = document.getElementById('dashboardNewLinkBtn');
+        const closeNewLinkModalBtn = document.getElementById('closeNewLinkModalBtn');
+        const newLinkForm = document.getElementById('newLinkForm');
+        const newLinkSubmitBtn = document.getElementById('newLinkSubmitBtn');
+
+        dashboardNewLinkBtn.addEventListener('click', () => {
+            document.getElementById('newLonglink').value = '';
+            document.getElementById('newCustomSlug').value = '';
+            document.getElementById('newExpiryDate').value = '';
+            newLinkModal.style.display = 'flex';
+        });
+
+        closeNewLinkModalBtn.addEventListener('click', () => {
+            newLinkModal.style.display = 'none';
+        });
+
+        newLinkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const longlink = document.getElementById('newLonglink').value;
+            const shortlink = document.getElementById('newCustomSlug').value.trim() || undefined;
+            const expiryDate = document.getElementById('newExpiryDate').value;
+            
+            let expiry_delay = undefined;
+            if (expiryDate) {
+                const targetTime = new Date(expiryDate).getTime();
+                const nowTime = Date.now();
+                expiry_delay = Math.max(0, Math.floor((targetTime - nowTime) / 1000));
+            }
+
+            newLinkSubmitBtn.disabled = true;
+            newLinkSubmitBtn.querySelector('span').textContent = 'Creating...';
+
+            try {
+                const response = await fetch('/api/new', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ longlink, shortlink, expiry_delay })
+                });
+
+                if (response.status === 201) {
+                    showToast('Link created successfully!');
+                    newLinkModal.style.display = 'none';
+                    fetchLinks();
+                } else {
+                    const reason = await response.text();
+                    showToast(reason || 'Failed to create link.', 'error');
+                }
+            } catch(err) {
+                console.error(err);
+                showToast('Network error, please try again.', 'error');
+            } finally {
+                newLinkSubmitBtn.disabled = false;
+                newLinkSubmitBtn.querySelector('span').textContent = 'Create Link';
+            }
         });
 
         // Edit Modal Handlers
@@ -398,12 +716,15 @@
         window.addEventListener('click', (e) => {
             if (e.target === editModal) {
                 editModal.style.display = 'none';
+            } else if (e.target === newLinkModal) {
+                newLinkModal.style.display = 'none';
             }
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && editModal.style.display === 'flex') {
-                editModal.style.display = 'none';
+            if (e.key === 'Escape') {
+                if (editModal.style.display === 'flex') editModal.style.display = 'none';
+                if (newLinkModal.style.display === 'flex') newLinkModal.style.display = 'none';
             }
         });
 
