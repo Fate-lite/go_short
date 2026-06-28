@@ -11,5 +11,6 @@ services:
       - password=110
       - CHHOTO_API_KEY=fate110_api_key
       - CHHOTO_DB_URL=/db/urls.sqlite
+      - CHHOTO_PUBLIC_MODE=Enable
     volumes:
       - ./data:/db

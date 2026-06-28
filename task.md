@@ -1,0 +1,19 @@
+- `[x]` Production: Checkout stable main branch and upload to shorturl folder
+- `[x]` Production: Rebuild container to restore old port 25504 environment
+- `[x]` Testing: Checkout default-landing branch and create test compose configuration
+- `[x]` Testing: Upload test files and start test container on port 25505
+- `[x]` Verify: Run remote verification script test_remote_v3.py against port 25505
+- `[x]` Git: Add docker-compose-test.yml and push modifications to default-landing branch
+- `[x]` Config: Enable CHHOTO_PUBLIC_MODE=Enable in docker-compose-test.yml
+- `[x]` Frontend: Remove checkAuth logic and #loginMessage in custom_landing/index.html
+- `[x]` Deploy: Rebuild test container on port 25505
+- `[x]` Verify: Run remote test script verifying public mode link creation (201) and dashboard auth restrictions (401)
+- `[x]` Git: Commit and push updates to default-landing branch
+- `[x]` Fix: Implement execCommand clipboard fallback for HTTP contexts in landing page and dashboard
+- `[x]` Fix: Wrap QRCode instantiation in safety check to avoid ReferenceError
+- `[x]` Deploy: Upload files and rebuild test container (port 25505)
+- `[x]` Verify: Run test_remote_v3.py verifying complete end-to-end flow
+- `[x]` Style: Remove user avatar from dashboard header in index.html and rebuild test container
+- `[x]` Style: Align landing page and dashboard backgrounds with premium design drafts
+- `[x]` Style: Add premium neon glow effects and gradient borders for both pages
+- `[x]` Style: Upgrade to 3D honeycomb grid, colorful card back aura glow, and glassmorphic reflective sheens
