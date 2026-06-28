@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="alternate icon" href="/favicon.ico">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nOMxObhFctVdB835SDzua5Eqxs+54EJiWEd0EVLM1qvyhx5G45V54c17c2up36E5X44fxoI5RzGg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/qrcode.min.js"></script>
 </head>
 <body>
     <div class="bg-grid"></div>
@@ -92,9 +92,18 @@
                         </button>
                     </div>
 
-                    <div class="qr-container">
+                    <!-- Generate QR Button (Shown first) -->
+                    <div id="qrTriggerSection" style="text-align: center; margin-top: 1.5rem;">
+                        <button class="btn" style="width: auto; padding: 0.6rem 1.2rem; font-size: 0.875rem;" id="generateQrBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect></svg>
+                            <span>Generate QR Code</span>
+                        </button>
+                    </div>
+
+                    <!-- QR Container (Hidden until Generate button is clicked) -->
+                    <div class="qr-container" id="qrContainer" style="display: none; margin-top: 1.5rem;">
                         <div id="qrcode" class="qr-code"></div>
-                        <button class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.875rem;" id="downloadQrBtn">
+                        <button class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.875rem; margin-top: 0.5rem;" id="downloadQrBtn">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                             <span>Download QR Code</span>
                         </button>
@@ -160,12 +169,16 @@
         const resultSection = document.getElementById('resultSection');
         const resultUrl = document.getElementById('resultUrl');
         const copyBtn = document.getElementById('copyBtn');
+        const generateQrBtn = document.getElementById('generateQrBtn');
+        const qrTriggerSection = document.getElementById('qrTriggerSection');
+        const qrContainer = document.getElementById('qrContainer');
         const downloadQrBtn = document.getElementById('downloadQrBtn');
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
         const toastIcon = document.getElementById('toastIcon');
 
         let qrCodeInstance = null;
+        let generatedUrl = '';
 
         // Toggle Expand Sections
         advancedToggleBtn.addEventListener('click', () => {
@@ -224,7 +237,6 @@
                 });
 
                 const isJson = response.headers.get('content-type')?.includes('application/json');
-                let generatedUrl = '';
                 
                 if (isJson) {
                     const data = await response.json();
@@ -248,22 +260,11 @@
                 resultUrl.textContent = generatedUrl;
                 resultSection.style.display = 'block';
                 
-                // Generate QR Code
-                const qrContainer = document.getElementById('qrcode');
-                qrContainer.innerHTML = '';
-                if (typeof QRCode !== 'undefined') {
-                    qrCodeInstance = new QRCode(qrContainer, {
-                        text: generatedUrl,
-                        width: 140,
-                        height: 140,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                } else {
-                    console.warn('QRCode library is not loaded. Skipping QR code generation.');
-                    qrContainer.innerHTML = '<div style="color: rgba(255,255,255,0.4); font-size: 0.85rem; padding: 1rem; border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px;">QR Code Unavailable</div>';
-                }
+                // Reset QR Code state on new short URL generation
+                qrTriggerSection.style.display = 'block';
+                qrContainer.style.display = 'none';
+                qrContainer.classList.remove('visible');
+                document.getElementById('qrcode').innerHTML = '';
 
                 showToast('Short URL generated successfully!');
                 resultSection.scrollIntoView({ behavior: 'smooth' });
@@ -320,12 +321,52 @@
             });
         });
 
-        // Download QR Code handler
+        // Generate QR Code handler
+        generateQrBtn.addEventListener('click', () => {
+            const qrCodeDiv = document.getElementById('qrcode');
+            qrCodeDiv.innerHTML = '';
+            
+            if (typeof QRCode !== 'undefined') {
+                try {
+                    qrCodeInstance = new QRCode(qrCodeDiv, {
+                        text: generatedUrl,
+                        width: 140,
+                        height: 140,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    
+                    // Hide generate button and show QR code container with transition style class
+                    qrTriggerSection.style.display = 'none';
+                    qrContainer.style.display = 'flex';
+                    qrContainer.classList.add('visible');
+                    
+                    showToast('QR Code generated successfully!');
+                } catch (e) {
+                    console.error(e);
+                    showToast('Failed to generate QR Code.', 'error');
+                }
+            } else {
+                showToast('QR Code library not loaded.', 'error');
+            }
+        });
+
+        // Download QR Code handler (Robust canvas/image retrieval)
         downloadQrBtn.addEventListener('click', () => {
+            const canvas = document.querySelector('#qrcode canvas');
             const img = document.querySelector('#qrcode img');
-            if (img && img.src) {
+            let dataUrl = '';
+            
+            if (canvas) {
+                dataUrl = canvas.toDataURL('image/png');
+            } else if (img && img.src && img.src.startsWith('data:')) {
+                dataUrl = img.src;
+            }
+            
+            if (dataUrl) {
                 const link = document.createElement('a');
-                link.href = img.src;
+                link.href = dataUrl;
                 link.download = `qr-code-${document.getElementById('customSlug').value || 'shortlink'}.png`;
                 document.body.appendChild(link);
                 link.click();
